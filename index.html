@@ -11,6 +11,11 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
@@ -296,45 +301,213 @@
         }
 
         /* 技能 */
-        .skills-grid {
+        .skills-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 30px;
+            grid-template-columns: 400px 1fr;
+            gap: 120px;
+            align-items: center;
+            margin-top: 60px;
         }
 
-        .skill-box {
-            padding: 45px 35px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
+        .skills-left {
             text-align: center;
-            transition: all 0.3s ease;
         }
 
-        .skill-box:hover {
+        /* 左侧人像 - 长方形圆角 */
+        .skills-avatar {
+            width: 100%;
+            max-width: 350px;
+            aspect-ratio: 3/4;
+            border-radius: 25px;
+            overflow: hidden;
+            margin: 0 auto 30px;
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        /* 夜间模式人像发光 */
+        body.night-mode .skills-avatar {
+            box-shadow: 0 25px 70px rgba(167, 139, 250, 0.3);
+        }
+
+        body.night-mode .skills-avatar::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, #a78bfa, #60a5fa, #f472b6);
+            border-radius: 27px;
+            z-index: -1;
+            opacity: 0.8;
+        }
+
+        body.night-mode .skills-avatar:hover {
+            box-shadow: 0 35px 90px rgba(167, 139, 250, 0.5);
+        }
+
+        /* 白天模式人像发光 */
+        body.day-mode .skills-avatar {
+            box-shadow: 0 25px 70px rgba(245, 158, 11, 0.25);
+        }
+
+        body.day-mode .skills-avatar::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, #f59e0b, #fbbf24, #fb923c);
+            border-radius: 27px;
+            z-index: -1;
+            opacity: 0.6;
+        }
+
+        body.day-mode .skills-avatar:hover {
+            box-shadow: 0 35px 90px rgba(245, 158, 11, 0.4);
+        }
+
+        .skills-avatar:hover {
             transform: translateY(-10px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
-            border-color: var(--accent-color);
         }
 
-        .skill-number {
-            font-size: 0.9rem;
-            font-weight: 700;
+        .skills-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .skills-left h3 {
+            margin-top: 0;
+            font-size: 1.8rem;
+            color: var(--text-primary);
+        }
+
+        .skills-left p {
             color: var(--text-secondary);
-            margin-bottom: 25px;
+            margin-top: 10px;
+            font-size: 1.1rem;
         }
 
-        .skill-box h3 {
-            font-size: 1.3rem;
+        /* 右侧六角星图 */
+        .hexagon-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 700px;
+            margin: 0 auto;
+        }
+
+        /* Canvas用于绘制流动粒子 */
+        #hexagonCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* 能力卡片 */
+        .skill-card {
+            position: absolute;
+            backdrop-filter: blur(10px);
+            border-radius: 18px;
+            padding: 20px 24px;
+            width: 220px;
+            height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .skill-card.inactive {
+            opacity: 0.3;
+            transform: scale(0.95);
+        }
+
+        .skill-card h3 {
+            font-size: 1.2rem;
             margin-bottom: 12px;
             font-weight: 700;
+            color: var(--text-primary);
         }
 
-        .skill-box p {
+        .skill-card p {
+            font-size: 0.85rem;
             color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.6;
+            line-height: 1.5;
         }
+
+        /* 夜间模式的能力卡片 */
+        body.night-mode .skill-card {
+            background: rgba(26, 26, 46, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        body.night-mode .skill-card:hover {
+            transform: scale(1.08);
+            border-color: rgba(167, 139, 250, 0.6);
+            box-shadow: 0 15px 50px rgba(167, 139, 250, 0.4);
+        }
+
+        body.night-mode .skill-card.active {
+            transform: scale(1.15);
+            border-color: rgba(167, 139, 250, 0.8);
+            box-shadow: 0 20px 60px rgba(167, 139, 250, 0.6);
+            background: rgba(167, 139, 250, 0.15);
+            z-index: 20;
+        }
+
+        body.night-mode .skill-card .skill-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #a78bfa, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        /* 白天模式的能力卡片 */
+        body.day-mode .skill-card {
+            background: rgba(248, 249, 250, 0.95);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        body.day-mode .skill-card:hover {
+            transform: scale(1.08);
+            border-color: rgba(245, 158, 11, 0.6);
+            box-shadow: 0 15px 50px rgba(245, 158, 11, 0.3);
+        }
+
+        body.day-mode .skill-card.active {
+            transform: scale(1.15);
+            border-color: rgba(245, 158, 11, 0.8);
+            box-shadow: 0 20px 60px rgba(245, 158, 11, 0.5);
+            background: rgba(245, 158, 11, 0.1);
+            z-index: 20;
+        }
+
+        body.day-mode .skill-card .skill-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        /* 6个能力卡片的位置（六边形顶点） */
+        .skill-1 { top: 0; left: 50%; transform: translateX(-50%); }
+        .skill-2 { top: 25%; right: 5%; }
+        .skill-3 { bottom: 25%; right: 5%; }
+        .skill-4 { bottom: 0; left: 50%; transform: translateX(-50%); }
+        .skill-5 { bottom: 25%; left: 5%; }
+        .skill-6 { top: 25%; left: 5%; }
 
         /* 时间轴 */
         .timeline-section {
@@ -508,6 +681,12 @@
             color: var(--border-color);
         }
 
+        .project-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         .project-card-badge {
             position: absolute;
             top: 20px;
@@ -581,6 +760,18 @@
         .project-detail-page.active {
             opacity: 1;
             visibility: visible;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .project-detail-header {
@@ -1098,7 +1289,35 @@ text-transform: uppercase;
             .hero h1 { font-size: 3.5rem; }
             .hero h1 .subtitle { font-size: 1.8rem; }
             .section-title { font-size: 2.5rem; }
-            .hero-stats, .skills-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero-stats { grid-template-columns: repeat(2, 1fr); }
+
+            /* Skills响应式 - 改为上下布局 */
+            .skills-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .skills-avatar {
+                max-width: 250px;
+            }
+
+            .hexagon-wrapper {
+                height: 500px;
+            }
+
+            .skill-card {
+                min-width: 140px;
+                padding: 15px 20px;
+            }
+
+            .skill-card h3 {
+                font-size: 1rem;
+            }
+
+            .skill-card p {
+                font-size: 0.75rem;
+            }
+
             .project-header, .guestbook-grid, .contact-grid { grid-template-columns: 1fr; }
 
             .timeline::before { left: 30px; }
@@ -1174,6 +1393,73 @@ text-transform: uppercase;
             opacity: 1;
         }
 
+        /* 作品展示视差滚动墙 */
+        .gallery-section {
+            padding: 120px 0;
+            background: var(--bg-secondary);
+            overflow: hidden;
+        }
+
+        .gallery-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin-top: 60px;
+        }
+
+        .gallery-row {
+            display: flex;
+            gap: 20px;
+            will-change: transform;
+        }
+
+        .gallery-row-1 {
+            animation: slideLeft1 30s linear infinite;
+        }
+
+        .gallery-row-2 {
+            animation: slideLeft2 35s linear infinite;
+        }
+
+        @keyframes slideLeft1 {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @keyframes slideLeft2 {
+            0% { transform: translateX(-10%); }
+            100% { transform: translateX(-60%); }
+        }
+
+        .gallery-image-item {
+            flex-shrink: 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-image-item:hover {
+            transform: scale(1.08);
+            z-index: 10;
+        }
+
+        .gallery-image-item img {
+            display: block;
+            height: 160px;
+            width: auto;
+            object-fit: cover;
+        }
+
+        /* 不同大小的图片 */
+        .gallery-image-item:nth-child(3n) img {
+            height: 200px;
+        }
+
+        .gallery-image-item:nth-child(5n) img {
+            height: 150px;
+        }
+
     </style>
 </head>
 <body class="night-mode">
@@ -1204,6 +1490,10 @@ text-transform: uppercase;
                             <span class="zh-text">作品</span>
                             <span class="en-text">Work</span>
                         </a></li>
+                        <li><a href="#gallery">
+                            <span class="zh-text">展示</span>
+                            <span class="en-text">Gallery</span>
+                        </a></li>
                         <li><a href="#thoughts">
                             <span class="zh-text">思考</span>
                             <span class="en-text">Insights</span>
@@ -1233,58 +1523,60 @@ text-transform: uppercase;
 
         <section id="home" class="hero">
             <div class="hero-content">
-                <div class="hero-label">
-                    <i class="fas fa-robot"></i>
-                    <span class="zh-text">AI驱动内容创作者</span>
-                    <span class="en-text">AI-DRIVEN CREATOR</span>
+                <div class="hero-text">
+                    <div class="hero-label">
+                        <i class="fas fa-robot"></i>
+                        <span class="zh-text">AI驱动内容创作者</span>
+                        <span class="en-text">AI-DRIVEN CREATOR</span>
+                    </div>
+                    <h1>
+                        <span class="zh-text">欢迎</span>
+                        <span class="en-text">Welcome</span>
+                        <span class="subtitle">
+                            <span class="zh-text">为内容而生的AI驱动六边形战士</span>
+                            <span class="en-text">AI-Driven Hexagonal Content Warrior</span>
+                        </span>
+                    </h1>
+<p class="hero-description">
+                        <span class="zh-text">上手快、网感好，能扛事、产出稳。能写会画，懂数据复盘，善用AI赋能内容创作与营销策划。</span>
+                        <span class="en-text">Fast learner, creative, reliable, and productive. Expert in writing, design, data analysis, and AI-driven content creation & marketing strategy.</span>
+                    </p>
+                    <div class="hero-stats">
+                        <div class="stat-box">
+                            <div class="stat-value">3.74</div>
+                            <div class="stat-label">
+                                <span class="zh-text">GPA / 4.0</span>
+                                <span class="en-text">GPA / 4.0</span>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">90%</div>
+                            <div class="stat-label">
+                                <span class="zh-text">活动参与率</span>
+                                <span class="en-text">Event Participation</span>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">150%</div>
+                            <div class="stat-label">
+                                <span class="zh-text">浏览量增长</span>
+                                <span class="en-text">Views Growth</span>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">40+</div>
+                            <div class="stat-label">
+                                <span class="zh-text">内容发布</span>
+                                <span class="en-text">Content Published</span>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#work" class="cta-button">
+                        <span class="zh-text">探索作品</span>
+                        <span class="en-text">View Work</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
-                <h1>
-                    <span class="zh-text">欢迎</span>
-                    <span class="en-text">Welcome</span>
-                    <span class="subtitle">
-                        <span class="zh-text">为内容而生的AI驱动六边形战士</span>
-                        <span class="en-text">AI-Driven Hexagonal Content Warrior</span>
-                    </span>
-                </h1>
-                <p class="hero-description">
-                    <span class="zh-text">上手快、网感好，能扛事、产出稳。能写会画，懂数据复盘，善用AI赋能内容创作与营销策划。</span>
-                    <span class="en-text">Fast learner, creative, reliable, and productive. Expert in writing, design, data analysis, and AI-driven content creation & marketing strategy.</span>
-                </p>
-                <div class="hero-stats">
-                    <div class="stat-box">
-                        <div class="stat-value">3.74</div>
-                        <div class="stat-label">
-                            <span class="zh-text">GPA / 4.0</span>
-                            <span class="en-text">GPA / 4.0</span>
-                        </div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value">90%</div>
-                        <div class="stat-label">
-                            <span class="zh-text">活动参与率</span>
-                            <span class="en-text">Event Participation</span>
-                        </div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value">150%</div>
-                        <div class="stat-label">
-                            <span class="zh-text">浏览量增长</span>
-                            <span class="en-text">Views Growth</span>
-                        </div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-value">40+</div>
-                        <div class="stat-label">
-                            <span class="zh-text">内容发布</span>
-                            <span class="en-text">Content Published</span>
-                        </div>
-                    </div>
-                </div>
-                <a href="#work" class="cta-button">
-                    <span class="zh-text">探索作品</span>
-                    <span class="en-text">View Work</span>
-                    <i class="fas fa-arrow-right"></i>
-                </a>
             </div>
         </section>
 
@@ -1298,50 +1590,94 @@ text-transform: uppercase;
                     <span class="zh-text">六边形战士</span>
                     <span class="en-text">Hexagonal Warrior</span>
                 </h2>
-                <div class="skills-grid">
-                    <div class="skill-box">
-                        <div class="skill-number">01</div>
+                <div class="skills-container">
+                    <div class="skills-left">
+                        <div class="skills-avatar">
+                            <img src="avatar.jpg" alt="何姿慧">
+                        </div>
                         <h3>
-                            <span class="zh-text">爆款策划力</span>
-                            <span class="en-text">Viral Planning</span>
+                            <span class="zh-text">何姿慧</span>
+                            <span class="en-text">Zihui He</span>
                         </h3>
                         <p>
-                            <span class="zh-text">全国大赛一等奖 / 62.5万阅读量内容</span>
-                            <span class="en-text">National 1st Prize / 625K Views Content</span>
+                            <span class="zh-text">六边形战士</span>
+                            <span class="en-text">Hexagonal Warrior</span>
                         </p>
                     </div>
-                    <div class="skill-box">
-                        <div class="skill-number">02</div>
-                        <h3>
-                            <span class="zh-text">平台运营力</span>
-                            <span class="en-text">Platform Ops</span>
-                        </h3>
-                        <p>
-                            <span class="zh-text">5000+粉丝 / 互动提升30%</span>
-                            <span class="en-text">5K+ Followers / +30% Engagement</span>
-                        </p>
-                    </div>
-                    <div class="skill-box">
-                        <div class="skill-number">03</div>
-                        <h3>
-                            <span class="zh-text">视觉表达力</span>
-                            <span class="en-text">Visual Design</span>
-                        </h3>
-                        <p>
-                            <span class="zh-text">精通PS/PR/可画 / 多形式创作</span>
-                            <span class="en-text">Expert in PS/PR/Canva / Multi-format</span>
-                        </p>
-                    </div>
-                    <div class="skill-box">
-                        <div class="skill-number">04</div>
-                        <h3>
-                            <span class="zh-text">AI思维应用</span>
-                            <span class="en-text">AI Thinking</span>
-                        </h3>
-                        <p>
-                            <span class="zh-text">AI融入工作流 / 效率提升75%</span>
-                            <span class="en-text">AI Integration / +75% Efficiency</span>
-                        </p>
+                    <div class="hexagon-wrapper">
+                        <canvas id="hexagonCanvas"></canvas>
+
+                        <div class="skill-card skill-1" onclick="toggleSkill(this)">
+                            <div class="skill-number">01</div>
+                            <h3>
+                                <span class="zh-text">爆款策划力</span>
+                                <span class="en-text">Viral Planning</span>
+                            </h3>
+                            <p>
+                                <span class="zh-text">全国大赛一等奖 / 62.5万阅读量</span>
+                                <span class="en-text">National 1st Prize / 625K Views</span>
+                            </p>
+                        </div>
+
+                        <div class="skill-card skill-2" onclick="toggleSkill(this)">
+                            <div class="skill-number">02</div>
+                            <h3>
+                                <span class="zh-text">平台运营力</span>
+                                <span class="en-text">Platform Ops</span>
+                            </h3>
+                            <p>
+                                <span class="zh-text">5000+粉丝 / 互动提升30%</span>
+                                <span class="en-text">5K+ Followers / +30% Engagement</span>
+                            </p>
+                        </div>
+
+                        <div class="skill-card skill-3" onclick="toggleSkill(this)">
+                            <div class="skill-number">03</div>
+                            <h3>
+                                <span class="zh-text">视觉表达力</span>
+                                <span class="en-text">Visual Design</span>
+                            </h3>
+                            <p>
+                                <span class="zh-text">精通PS/PR/可画 / 多形式创作</span>
+                                <span class="en-text">Expert in PS/PR/Canva</span>
+                            </p>
+                        </div>
+
+                        <div class="skill-card skill-4" onclick="toggleSkill(this)">
+                            <div class="skill-number">04</div>
+                            <h3>
+                                <span class="zh-text">AI思维应用</span>
+                                <span class="en-text">AI Thinking</span>
+                            </h3>
+                            <p>
+                                <span class="zh-text">AI融入工作流 / 效率提升75%</span>
+                                <span class="en-text">AI Integration / +75% Efficiency</span>
+                            </p>
+                        </div>
+
+                        <div class="skill-card skill-5" onclick="toggleSkill(this)">
+                            <div class="skill-number">05</div>
+                            <h3>
+                                <span class="zh-text">数据驱动力</span>
+                                <span class="en-text">Data Analysis</span>
+                            </h3>
+                            <p>
+                                <span class="zh-text">数据分析 / 用户洞察</span>
+                                <span class="en-text">Data & User Insights</span>
+                            </p>
+                        </div>
+
+                        <div class="skill-card skill-6" onclick="toggleSkill(this)">
+                            <div class="skill-number">06</div>
+                            <h3>
+                                <span class="zh-text">内容创作力</span>
+                                <span class="en-text">Content Creation</span>
+                            </h3>
+                            <p>
+                                <span class="zh-text">能写会画 / 多形式内容创作</span>
+                                <span class="en-text">Multi-format Production</span>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1371,7 +1707,7 @@ text-transform: uppercase;
                                 <span class="en-text">Anker Innovations</span>
                             </div>
                             <p>
-                                <span class="zh-text">主导ATIT部门组织文化建设与AI文化体系建设，推动团队形成开放、共创、数据驱动的运营文化。</span>
+                                <span class="zh-text">推动ATIT部门组织文化建设与AI文化体系建设，推动团队形成开放、共创、数据驱动的运营文化。</span>
                                 <span class="en-text">Led ATIT organizational and AI culture development, promoting open, collaborative, data-driven operational culture.</span>
                             </p>
                             <div class="timeline-achievements">
@@ -1397,7 +1733,7 @@ text-transform: uppercase;
                                         <span class="en-text">Launched "PP Gold Mining" knowledge check-in program, boosting learning engagement</span>
                                     </li>
                                     <li>
-                                        <span class="zh-text">主导AI学习社区建设，AI内容阅读量1100+，AI动态采纳率85%，整体效率提升75%</span>
+                                        <span class="zh-text">推动AI学习社区建设，AI内容阅读量1100+，AI动态采纳率85%，整体效率提升75%</span>
                                         <span class="en-text">Built AI learning community with 1100+ reads, 85% adoption rate, 75% efficiency boost</span>
                                     </li>
                                 </ul>
@@ -1463,7 +1799,7 @@ text-transform: uppercase;
                     <!-- 安克创新卡片 -->
                     <div class="project-card" onclick="showProjectDetail('anker')">
                         <div class="project-card-image">
-                            <i class="fas fa-building"></i>
+                            <img src="project_ai.jpg" alt="安克创新">
                             <div class="project-card-badge">
                                 <span class="zh-text">企业运营</span>
                                 <span class="en-text">Corporate Ops</span>
@@ -1475,7 +1811,7 @@ text-transform: uppercase;
                                 <span class="en-text">Anker Culture Development</span>
                             </h3>
                             <p>
-                                <span class="zh-text">主导ATIT部门组织文化与AI文化体系建设，员工参与率90%+，满意度提升至70%</span>
+                                <span class="zh-text">推动ATIT部门组织文化与AI文化体系建设，员工参与率90%+，满意度提升至70%</span>
                                 <span class="en-text">Led ATIT organizational and AI culture development, 90%+ participation, 70% satisfaction</span>
                             </p>
                             <div class="project-card-btn">
@@ -1489,7 +1825,7 @@ text-transform: uppercase;
                     <!-- Canva卡片 -->
                     <div class="project-card" onclick="showProjectDetail('canva')">
                         <div class="project-card-image">
-                            <i class="fas fa-palette"></i>
+                            <img src="project_canva.jpg" alt="Canva">
                             <div class="project-card-badge">
                                 <span class="zh-text">省级一等奖</span>
                                 <span class="en-text">Provincial 1st</span>
@@ -1515,7 +1851,7 @@ text-transform: uppercase;
                     <!-- 纳爱斯卡片 -->
                     <div class="project-card" onclick="showProjectDetail('naoyes')">
                         <div class="project-card-image">
-                            <i class="fas fa-microphone"></i>
+                            <img src="project_tooth.jpg" alt="纳爱斯">
                             <div class="project-card-badge">
                                 <span class="zh-text">全国一等奖</span>
                                 <span class="en-text">National 1st</span>
@@ -1556,19 +1892,7 @@ text-transform: uppercase;
             <div class="project-detail-content">
                 <div class="project-detail-intro">
                     <div class="project-detail-image">
-                        <!-- 替换配图：<img src="uploaded/anker-project.jpg" alt="安克创新项目"> -->
-                        <div class="detail-image-placeholder">
-                            <i class="fas fa-building"></i>
-                            <span>
-                                <span class="zh-text">项目配图</span>
-                                <span class="en-text">Project Image</span>
-                            </span>
-                        </div>
-                        <div class="detail-upload-hint">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <span class="zh-text">点击上传项目配图<br>建议尺寸：1200x900px</span>
-                            <span class="en-text">Click to upload image<br>Recommended: 1200x900px</span>
-                        </div>
+                        <img src="project_ai.jpg" alt="安克创新项目">
                     </div>
                     <div class="project-detail-info">
                         <h2>
@@ -1576,7 +1900,7 @@ text-transform: uppercase;
                             <span class="en-text">Anker Organizational & AI Culture Development</span>
                         </h2>
                         <p>
-                            <span class="zh-text">在安克创新担任ATIT运营实习生期间，我主导了部门的组织文化建设与AI文化体系建设，通过系统化的策划与执行，显著提升了团队凝聚力和工作效率。</span>
+                            <span class="zh-text">在安克创新担任ATIT运营实习生期间，我推动了部门的组织文化建设与AI文化体系建设，通过系统化的策划与执行，显著提升了团队凝聚力和工作效率。</span>
                             <span class="en-text">As ATIT Operations Intern at Anker Innovations, I led organizational and AI culture development through systematic planning and execution, significantly enhancing team cohesion and efficiency.</span>
                         </p>
                         <div class="project-meta-grid">
@@ -1690,7 +2014,7 @@ text-transform: uppercase;
                                     <span class="en-text">AI Learning Community</span>
                                 </h4>
                                 <p>
-                                    <span class="zh-text">主导AI学习社区建设（类似飞书"飞行社"），组织AI案例分享、工具工作坊与创意展示，打造部门AI实践与知识共享闭环。</span>
+                                    <span class="zh-text">推动AI学习社区建设（类似飞书"飞行社"），组织AI案例分享、工具工作坊与创意展示，打造部门AI实践与知识共享闭环。</span>
                                     <span class="en-text">Built AI learning community (similar to Feishu's "Flight Club"), organizing case sharing, tool workshops, and creative showcases.</span>
                                 </p>
                             </div>
@@ -1729,19 +2053,7 @@ text-transform: uppercase;
             <div class="project-detail-content">
                 <div class="project-detail-intro">
                     <div class="project-detail-image">
-                        <!-- 替换配图：<img src="uploaded/canva-project.jpg" alt="Canva营销项目"> -->
-                        <div class="detail-image-placeholder">
-                            <i class="fas fa-palette"></i>
-                            <span>
-                                <span class="zh-text">项目配图</span>
-                                <span class="en-text">Project Image</span>
-                            </span>
-                        </div>
-                        <div class="detail-upload-hint">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <span class="zh-text">点击上传项目配图<br>建议尺寸：1200x900px</span>
-                            <span class="en-text">Click to upload image<br>Recommended: 1200x900px</span>
-                        </div>
+                        <img src="project_canva.jpg" alt="Canva营销项目">
                     </div>
                     <div class="project-detail-info">
                         <h2>
@@ -1875,19 +2187,7 @@ text-transform: uppercase;
             <div class="project-detail-content">
                 <div class="project-detail-intro">
                     <div class="project-detail-image">
-                        <!-- 替换配图：<img src="uploaded/naoyes-project.jpg" alt="纳爱斯广播广告"> -->
-                        <div class="detail-image-placeholder">
-                            <i class="fas fa-microphone"></i>
-                            <span>
-                                <span class="zh-text">项目配图</span>
-                                <span class="en-text">Project Image</span>
-                            </span>
-                        </div>
-                        <div class="detail-upload-hint">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <span class="zh-text">点击上传项目配图<br>建议尺寸：1200x900px</span>
-                            <span class="en-text">Click to upload image<br>Recommended: 1200x900px</span>
-                        </div>
+                        <img src="project_tooth.jpg" alt="纳爱斯广播广告">
                     </div>
                     <div class="project-detail-info">
                         <h2>
@@ -2009,6 +2309,75 @@ text-transform: uppercase;
                 </div>
             </div>
         </div>
+
+        <section id="gallery" class="gallery-section">
+            <div class="container">
+                <div class="section-label">
+                    <span class="zh-text">作品展示</span>
+                    <span class="en-text">Gallery</span>
+                </div>
+                <h2 class="section-title">
+                    <span class="zh-text">视觉作品</span>
+                    <span class="en-text">Visual Works</span>
+                </h2>
+            </div>
+
+            <div class="gallery-rows">
+                <div class="gallery-row gallery-row-1">
+                    <!-- 第一行图片,复制两遍实现无限循环 -->
+                    <div class="gallery-image-item"><img src="1.jpg" alt="作品1"></div>
+                    <div class="gallery-image-item"><img src="3.jpg" alt="作品3"></div>
+                    <div class="gallery-image-item"><img src="5.jpg" alt="作品5"></div>
+                    <div class="gallery-image-item"><img src="7.jpg" alt="作品7"></div>
+                    <div class="gallery-image-item"><img src="9.jpg" alt="作品9"></div>
+                    <div class="gallery-image-item"><img src="11.jpg" alt="作品11"></div>
+                    <div class="gallery-image-item"><img src="640 (1).png" alt="作品"></div>
+                    <div class="gallery-image-item"><img src="这湘有礼 - frame at 1m45s.jpg" alt="这湘有礼"></div>
+                    <div class="gallery-image-item"><img src="蓝灰色模拟UI音乐小红书Plog.jpg" alt="音乐小红书Plog"></div>
+                    <div class="gallery-image-item"><img src="纵享每一刻 - frame at 0m15s.jpg" alt="纵享每一刻"></div>
+
+                    <!-- 复制一遍实现无缝循环 -->
+                    <div class="gallery-image-item"><img src="1.jpg" alt="作品1"></div>
+                    <div class="gallery-image-item"><img src="3.jpg" alt="作品3"></div>
+                    <div class="gallery-image-item"><img src="5.jpg" alt="作品5"></div>
+                    <div class="gallery-image-item"><img src="7.jpg" alt="作品7"></div>
+                    <div class="gallery-image-item"><img src="9.jpg" alt="作品9"></div>
+                    <div class="gallery-image-item"><img src="11.jpg" alt="作品11"></div>
+                    <div class="gallery-image-item"><img src="640 (1).png" alt="作品"></div>
+                    <div class="gallery-image-item"><img src="这湘有礼 - frame at 1m45s.jpg" alt="这湘有礼"></div>
+                    <div class="gallery-image-item"><img src="蓝灰色模拟UI音乐小红书Plog.jpg" alt="音乐小红书Plog"></div>
+                    <div class="gallery-image-item"><img src="纵享每一刻 - frame at 0m15s.jpg" alt="纵享每一刻"></div>
+                </div>
+
+                <div class="gallery-row gallery-row-2">
+                    <!-- 第二行图片,复制两遍 -->
+                    <div class="gallery-image-item"><img src="2.jpg" alt="作品2"></div>
+                    <div class="gallery-image-item"><img src="4.jpg" alt="作品4"></div>
+                    <div class="gallery-image-item"><img src="6.jpg" alt="作品6"></div>
+                    <div class="gallery-image-item"><img src="8.jpg" alt="作品8"></div>
+                    <div class="gallery-image-item"><img src="10.png" alt="作品10"></div>
+                    <div class="gallery-image-item"><img src="12.jpg" alt="作品12"></div>
+                    <div class="gallery-image-item"><img src="640 (4).jpg" alt="作品"></div>
+                    <div class="gallery-image-item"><img src="640 (5).jpg" alt="作品"></div>
+                    <div class="gallery-image-item"><img src="这湘有礼 - frame at 3m16s.jpg" alt="这湘有礼"></div>
+                    <div class="gallery-image-item"><img src="微信图片_20251013214531.jpg" alt="微信图片"></div>
+                    <div class="gallery-image-item"><img src="屏幕截图 2025-10-15 202254.png" alt="屏幕截图"></div>
+
+                    <!-- 复制一遍 -->
+                    <div class="gallery-image-item"><img src="2.jpg" alt="作品2"></div>
+                    <div class="gallery-image-item"><img src="4.jpg" alt="作品4"></div>
+                    <div class="gallery-image-item"><img src="6.jpg" alt="作品6"></div>
+                    <div class="gallery-image-item"><img src="8.jpg" alt="作品8"></div>
+                    <div class="gallery-image-item"><img src="10.png" alt="作品10"></div>
+                    <div class="gallery-image-item"><img src="12.jpg" alt="作品12"></div>
+                    <div class="gallery-image-item"><img src="640 (4).jpg" alt="作品"></div>
+                    <div class="gallery-image-item"><img src="640 (5).jpg" alt="作品"></div>
+                    <div class="gallery-image-item"><img src="这湘有礼 - frame at 3m16s.jpg" alt="这湘有礼"></div>
+                    <div class="gallery-image-item"><img src="微信图片_20251013214531.jpg" alt="微信图片"></div>
+                    <div class="gallery-image-item"><img src="屏幕截图 2025-10-15 202254.png" alt="屏幕截图"></div>
+                </div>
+            </div>
+        </section>
 
         <section id="thoughts">
             <div class="container">
@@ -2244,12 +2613,12 @@ text-transform: uppercase;
                         <span class="en-text">Download Materials</span>
                     </h3>
                     <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
-                        <a href="uploaded/作品集-何姿慧.pdf" class="cta-button" download style="display: inline-flex; align-items: center; gap: 12px; padding: 18px 40px; text-decoration: none;">
+                        <a href="作品集-何姿慧.pdf" class="cta-button" download style="display: inline-flex; align-items: center; gap: 12px; padding: 18px 40px; text-decoration: none;">
                             <i class="fas fa-file-pdf"></i>
                             <span class="zh-text">下载作品集 PDF</span>
                             <span class="en-text">Download Portfolio PDF</span>
                         </a>
-                        <a href="uploaded/种草营销实习.pdf" class="cta-button" download style="display: inline-flex; align-items: center; gap: 12px; padding: 18px 40px; text-decoration: none; background: transparent; border: 2px solid var(--text-primary); color: var(--text-primary);">
+                        <a href="种草营销实习.pdf" class="cta-button" download style="display: inline-flex; align-items: center; gap: 12px; padding: 18px 40px; text-decoration: none; background: transparent; border: 2px solid var(--text-primary); color: var(--text-primary);">
                             <i class="fas fa-file-alt"></i>
                             <span class="zh-text">下载简历 PDF</span>
                             <span class="en-text">Download Resume PDF</span>
@@ -2629,8 +2998,8 @@ text-transform: uppercase;
             img.addEventListener('click', () => {
                 const lang = document.documentElement.lang;
                 alert(lang === 'zh-CN' ?
-                    '替换项目配图：\n\n1. 准备项目截图（建议1200x900px）\n2. 上传到GitHub仓库的uploaded/文件夹\n3. 在index.html中找到对应项目的注释\n4. 取消注释并修改路径：\n   <img src="uploaded/project-name.jpg" alt="项目">\n5. 提交更改，网站自动更新' :
-                    'Replace project image:\n\n1. Prepare screenshot (1200x900px)\n2. Upload to GitHub uploaded/ folder\n3. Find comment in index.html\n4. Uncomment: <img src="uploaded/project-name.jpg" alt="project">\n5. Commit changes');
+                    '替换项目配图：\n\n1. 准备项目截图（建议1200x900px）\n2. 上传到GitHub仓库根目录\n3. 在index.html中找到对应项目的注释\n4. 取消注释并修改路径：\n   <img src="project-name.jpg" alt="项目">\n5. 提交更改，网站自动更新' :
+                    'Replace project image:\n\n1. Prepare screenshot (1200x900px)\n2. Upload to GitHub repository root\n3. Find comment in index.html\n4. Uncomment: <img src="project-name.jpg" alt="project">\n5. Commit changes');
             });
         });
 
@@ -2643,6 +3012,182 @@ text-transform: uppercase;
                     'Replace image:\n1. Upload to GitHub\n2. Find comment\n3. Uncomment: <img src="your-image.jpg" alt="project">');
             });
         });
+
+        // ========== 六角星能力图 Canvas 动画 ==========
+        const hexagonCanvas = document.getElementById('hexagonCanvas');
+        if (hexagonCanvas) {
+            const hexCtx = hexagonCanvas.getContext('2d');
+
+            hexagonCanvas.width = 800;
+            hexagonCanvas.height = 700;
+
+            // 六边形顶点坐标（中心位置）
+            const centerX = hexagonCanvas.width / 2;
+            const centerY = hexagonCanvas.height / 2;
+            const radius = 240;
+
+            const points = [];
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i - Math.PI / 2;
+                points.push({
+                    x: centerX + radius * Math.cos(angle),
+                    y: centerY + radius * Math.sin(angle)
+                });
+            }
+
+            // 流动粒子
+            class GlowParticle {
+                constructor() {
+                    this.progress = Math.random();
+                    this.speed = 0.002 + Math.random() * 0.003;
+                    this.size = Math.random() * 3 + 2;
+                    this.opacity = Math.random() * 0.5 + 0.5;
+                }
+
+                update() {
+                    this.progress += this.speed;
+                    if (this.progress > 1) this.progress = 0;
+                }
+
+                draw(startPoint, endPoint) {
+                    const x = startPoint.x + (endPoint.x - startPoint.x) * this.progress;
+                    const y = startPoint.y + (endPoint.y - startPoint.y) * this.progress;
+
+                    // 荧光效果（根据模式切换颜色）
+                    const isDayMode = document.body.classList.contains('day-mode');
+                    const gradient = hexCtx.createRadialGradient(x, y, 0, x, y, this.size * 3);
+
+                    if (isDayMode) {
+                        // 白天：金黄色荧光
+                        gradient.addColorStop(0, `rgba(245, 158, 11, ${this.opacity})`);
+                        gradient.addColorStop(0.5, `rgba(251, 191, 36, ${this.opacity * 0.5})`);
+                        gradient.addColorStop(1, 'rgba(245, 158, 11, 0)');
+                    } else {
+                        // 夜间：紫蓝色荧光
+                        gradient.addColorStop(0, `rgba(167, 139, 250, ${this.opacity})`);
+                        gradient.addColorStop(0.5, `rgba(96, 165, 250, ${this.opacity * 0.5})`);
+                        gradient.addColorStop(1, 'rgba(167, 139, 250, 0)');
+                    }
+
+                    hexCtx.fillStyle = gradient;
+                    hexCtx.beginPath();
+                    hexCtx.arc(x, y, this.size * 3, 0, Math.PI * 2);
+                    hexCtx.fill();
+
+                    // 核心亮点
+                    hexCtx.fillStyle = isDayMode ?
+                        `rgba(245, 158, 11, ${this.opacity})` :
+                        `rgba(255, 255, 255, ${this.opacity})`;
+                    hexCtx.beginPath();
+                    hexCtx.arc(x, y, this.size, 0, Math.PI * 2);
+                    hexCtx.fill();
+                }
+            }
+
+            // 为每条边创建多个粒子
+            const particles = [];
+            for (let i = 0; i < 6; i++) {
+                const edgeParticles = [];
+                for (let j = 0; j < 8; j++) {
+                    edgeParticles.push(new GlowParticle());
+                }
+                particles.push(edgeParticles);
+            }
+
+            function animateHexagon() {
+                hexCtx.clearRect(0, 0, hexagonCanvas.width, hexagonCanvas.height);
+
+                // 检测模式
+                const isDayMode = document.body.classList.contains('day-mode');
+
+                // 绘制六边形背景线
+                hexCtx.strokeStyle = isDayMode ? 'rgba(245, 158, 11, 0.25)' : 'rgba(167, 139, 250, 0.2)';
+                hexCtx.lineWidth = 2;
+                hexCtx.beginPath();
+                hexCtx.moveTo(points[0].x, points[0].y);
+                for (let i = 1; i < 6; i++) {
+                    hexCtx.lineTo(points[i].x, points[i].y);
+                }
+                hexCtx.closePath();
+                hexCtx.stroke();
+
+                // 绘制流动的荧光粒子
+                for (let i = 0; i < 6; i++) {
+                    const startPoint = points[i];
+                    const endPoint = points[(i + 1) % 6];
+
+                    particles[i].forEach(particle => {
+                        particle.update();
+                        particle.draw(startPoint, endPoint);
+                    });
+                }
+
+                // 绘制顶点光晕
+                points.forEach(point => {
+                    const gradient = hexCtx.createRadialGradient(point.x, point.y, 0, point.x, point.y, 15);
+                    if (isDayMode) {
+                        // 白天：金色光晕
+                        gradient.addColorStop(0, 'rgba(245, 158, 11, 0.8)');
+                        gradient.addColorStop(1, 'rgba(245, 158, 11, 0)');
+                        hexCtx.fillStyle = gradient;
+                        hexCtx.beginPath();
+                        hexCtx.arc(point.x, point.y, 15, 0, Math.PI * 2);
+                        hexCtx.fill();
+
+                        hexCtx.fillStyle = '#f59e0b';
+                        hexCtx.beginPath();
+                        hexCtx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+                        hexCtx.fill();
+                    } else {
+                        // 夜间：紫色光晕
+                        gradient.addColorStop(0, 'rgba(167, 139, 250, 0.8)');
+                        gradient.addColorStop(1, 'rgba(167, 139, 250, 0)');
+                        hexCtx.fillStyle = gradient;
+                        hexCtx.beginPath();
+                        hexCtx.arc(point.x, point.y, 15, 0, Math.PI * 2);
+                        hexCtx.fill();
+
+                        hexCtx.fillStyle = '#a78bfa';
+                        hexCtx.beginPath();
+                        hexCtx.arc(point.x, point.y, 5, 0, Math.PI * 2);
+                        hexCtx.fill();
+                    }
+                });
+
+                requestAnimationFrame(animateHexagon);
+            }
+
+            animateHexagon();
+        }
+
+        // ========== 点击能力卡片交互 ==========
+        let activeCard = null;
+
+        function toggleSkill(card) {
+            const allCards = document.querySelectorAll('.skill-card');
+
+            if (activeCard === card) {
+                // 取消激活
+                allCards.forEach(c => {
+                    c.classList.remove('active', 'inactive');
+                });
+                activeCard = null;
+            } else {
+                // 激活当前卡片，其他变淡
+                allCards.forEach(c => {
+                    if (c === card) {
+                        c.classList.add('active');
+                        c.classList.remove('inactive');
+                    } else {
+                        c.classList.add('inactive');
+                        c.classList.remove('active');
+                    }
+                });
+                activeCard = card;
+            }
+        }
+
+        // ========== 作品轮播已移除,改用CSS动画滚动 ==========
 
     </script>
 </body>
