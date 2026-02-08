@@ -1580,29 +1580,101 @@ text-transform: uppercase;
         }
 
         @media (max-width: 768px) {
-            nav .container, .hero, section { padding-left: 30px; padding-right: 30px; }
-            .hero h1 { font-size: 3.5rem; }
-            .hero h1 .subtitle { font-size: 1.8rem; }
-            .section-title { font-size: 2.5rem; }
-            .hero-stats { grid-template-columns: repeat(2, 1fr); }
+            /* 导航优化 */
+            nav .container {
+                padding: 0 20px;
+                height: 70px;
+            }
 
-            /* Skills响应式 - 改为上下布局 */
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .nav-menu {
+                display: none; /* 移动端隐藏导航菜单，或添加汉堡菜单 */
+            }
+
+            .controls {
+                gap: 8px;
+            }
+
+            /* Hero区域 */
+            nav .container, .hero, section {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .hero {
+                padding-top: 100px;
+                padding-bottom: 40px;
+            }
+
+            .hero h1 {
+                font-size: 2.8rem;
+                letter-spacing: -2px;
+            }
+
+            .hero h1 .subtitle {
+                font-size: 1.4rem;
+                margin-top: 20px;
+            }
+
+            .hero-description {
+                font-size: 1.1rem;
+            }
+
+            .hero-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+            }
+
+            .stat-value {
+                font-size: 2.5rem;
+            }
+
+            .cta-button {
+                padding: 16px 35px;
+                font-size: 0.95rem;
+            }
+
+            /* Section通用 */
+            section {
+                padding: 80px 20px;
+            }
+
+            .section-title {
+                font-size: 2rem;
+                letter-spacing: -1px;
+            }
+
+            .section-label {
+                font-size: 0.75rem;
+            }
+
+            /* 技能区域 */
             .skills-container {
                 grid-template-columns: 1fr;
                 gap: 40px;
             }
 
             .skills-avatar {
-                max-width: 250px;
+                max-width: 220px;
             }
 
             .hexagon-wrapper {
-                height: 500px;
+                height: 550px;
+                max-width: 100%;
             }
 
             .skill-card {
-                min-width: 140px;
-                padding: 15px 20px;
+                width: 160px;
+                height: 140px;
+                padding: 12px;
+                min-width: auto;
+            }
+
+            .skill-card .skill-number {
+                font-size: 2rem;
             }
 
             .skill-card h3 {
@@ -1610,26 +1682,182 @@ text-transform: uppercase;
             }
 
             .skill-card p {
-                font-size: 0.75rem;
+                font-size: 0.7rem;
             }
 
-            .project-header, .guestbook-grid, .contact-grid { grid-template-columns: 1fr; }
+            /* 时间轴 */
+            .timeline::before {
+                left: 30px;
+            }
 
-            .timeline::before { left: 30px; }
-            .timeline-item { grid-template-columns: 1fr; gap: 0; }
-            .timeline-item .timeline-content { grid-column: 1 !important; text-align: left !important; margin-left: 60px; }
-            .timeline-item .timeline-empty { display: none; }
-            .timeline-item::before { left: 30px; }
+            .timeline-item {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
 
-            /* 项目卡片响应式 */
-            .projects-grid { grid-template-columns: 1fr; }
-            .project-detail-header { padding: 20px 30px; }
-            .project-detail-content { padding: 40px 30px; }
-            .project-detail-intro { grid-template-columns: 1fr; }
+            .timeline-item .timeline-content {
+                grid-column: 1 !important;
+                text-align: left !important;
+                margin-left: 60px;
+            }
 
-            /* 思考空间响应式 */
+            .timeline-item .timeline-empty {
+                display: none;
+            }
+
+            .timeline-item::before {
+                left: 30px;
+            }
+
+            /* 项目卡片 - 手机端滑动 */
+            .projects-grid {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                gap: 20px;
+                padding-bottom: 20px;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .projects-grid::-webkit-scrollbar {
+                height: 6px;
+            }
+
+            .projects-grid::-webkit-scrollbar-track {
+                background: var(--bg-secondary);
+                border-radius: 10px;
+            }
+
+            .projects-grid::-webkit-scrollbar-thumb {
+                background: var(--accent-color);
+                border-radius: 10px;
+            }
+
+            .project-card {
+                min-width: 85%;
+                flex-shrink: 0;
+                scroll-snap-align: center;
+            }
+
+            .project-card-body h3 {
+                font-size: 1.3rem;
+            }
+
+            /* 项目卡片图片缩小 */
+            .project-card-image {
+                height: 180px;
+            }
+
+            .project-card-body {
+                padding: 20px;
+            }
+
+            .project-card-body h3 {
+                font-size: 1.2rem;
+            }
+
+            .project-card-body p {
+                font-size: 0.9rem;
+                line-height: 1.5;
+            }
+
+            .view-detail {
+                font-size: 0.85rem;
+            }
+
+            .project-detail-header {
+                padding: 15px 20px;
+            }
+
+            .project-detail-content {
+                padding: 30px 20px;
+            }
+
+            .project-detail-intro {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .project-detail-intro h2 {
+                font-size: 2rem;
+            }
+
+            /* 作品墙 */
+            .gallery-image-item img {
+                height: 140px;
+            }
+
+            .gallery-image-item:nth-child(3n) img {
+                height: 170px;
+            }
+
+            .gallery-image-item:nth-child(5n) img {
+                height: 120px;
+            }
+
+            /* 思考空间 */
             .thoughts-main {
                 grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .thoughts-container {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .insight-card {
+                padding: 25px;
+            }
+
+            .thought-title-new {
+                font-size: 1.3rem;
+            }
+
+            .tools-card, .status-card {
+                padding: 25px;
+            }
+
+            /* 留言板 */
+            .guestbook-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* 联系方式 - 手机端横排 */
+            .contact-grid {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .contact-box {
+                padding: 20px 10px;
+            }
+
+            .contact-icon {
+                font-size: 1.8rem;
+                margin-bottom: 10px;
+            }
+
+            .contact-box h4 {
+                font-size: 0.85rem;
+                margin-bottom: 5px;
+            }
+
+            .contact-box p {
+                font-size: 0.85rem;
+            }
+
+            /* 联系信息紧凑横排 */
+            #contact .contact-grid {
+                display: flex;
+                justify-content: space-around;
+                gap: 15px;
+                margin-top: 30px;
+            }
+
+            #contact .contact-box {
+                flex: 1;
+                text-align: center;
             }
         }
 
